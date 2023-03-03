@@ -2,20 +2,20 @@ const { prompt } = require("inquirer");
 const db = require("./db/connection");
 
 // IMPORTING ALL THE FUNCTIONS FROM THE OTHER FILES
-const {
-  viewDepartments,
-  addDepartment,
-  deleteDepartment,
-} = require("./db/departments");
+// const {
+//   viewDepartments,
+//   addDepartment,
+//   deleteDepartment,
+// } = require("./db/departments");
 
 const { viewAllRoles, addRole, deleteRole } = require("./db/roles");
 
-const {
-  viewAllEmployees,
-  addEmployee,
-  updateEmployeeRole,
-  deleteEmployee,
-} = require("./db/employee");
+// const {
+//   viewAllEmployees,
+//   addEmployee,
+//   updateEmployeeRole,
+//   deleteEmployee,
+// } = require("./db/employee");
 
 // Function to display main menu
 const promptMainMenu = async () => {
@@ -73,11 +73,8 @@ const promptMainMenu = async () => {
       case "Delete an employee":
         data = deleteEmployee();
         break;
-      case "Exit":
-        db.end();
-        break;
     }
-    promptMainMenu();
+    promptMainMenu(false);
   };
 
 // Call the promptMainMenu function to start the application
