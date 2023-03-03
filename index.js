@@ -5,11 +5,10 @@ const db = require("./db/connection");
 const {
   viewDepartments,
   addDepartment,
-  updateDepartment,
   deleteDepartment,
 } = require("./db/departments");
 
-const { viewAllRoles, addRole, updateRole, deleteRole } = require("./db/roles");
+const { viewAllRoles, addRole, deleteRole } = require("./db/roles");
 
 const {
   viewAllEmployees,
@@ -25,6 +24,7 @@ function promptMainMenu() {
       type: "list",
       name: "mainMenu",
       message: "What would you like to do?",
+      pagesize: 15,
       choices: [
         "View all departments",
         "View all roles",
@@ -33,7 +33,6 @@ function promptMainMenu() {
         "Add a role",
         "Add an employee",
         "Update an employee role",
-        "Update a role",
         "Delete a department",
         "Delete a role",
         "Delete an employee",
@@ -60,14 +59,8 @@ function promptMainMenu() {
       case "Add an employee":
         addEmployee();
         break;
-      case "update a department":
-        updateDepartment();
-        break;
       case "Update an employee role":
         updateEmployeeRole();
-        break;
-      case "Update a role":
-        updateRole();
         break;
       case "Delete a department":
         deleteDepartment();

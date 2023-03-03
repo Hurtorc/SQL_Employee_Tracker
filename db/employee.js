@@ -1,5 +1,5 @@
 const { prompt } = require("inquirer");
-const db = require("./db/connection");
+const db = require("./connection");
 
 // Function to view all employees
 function viewAllEmployees() {

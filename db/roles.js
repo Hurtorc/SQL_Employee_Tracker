@@ -1,3 +1,6 @@
+const { prompt } = require("inquirer");
+const db = require("./connection");
+
 //Function to view all roles
 function viewAllRoles() {
   const sql = `SELECT role.id, role.title, department.name AS department, role.salary 
@@ -61,58 +64,6 @@ function addRole() {
   });
 }
 
-// Function to update a role
-function updateRole() {
-  const sql = `SELECT roles.id, roles.title, departments.name AS department, roles.salary FROM roles LEFT JOIN departments ON roles.department_id = departments.id`;
-  db.query(sql, (err, rows) => {
-    if (err) throw err;
-    prompt([
-      {
-        type: "list",
-        name: "role",
-        message: "Choose the role to update:",
-        choices: rows.map((row) => ({ name: `${row.title} (${row.department})`, value: row.id })),
-      },
-      {
-        type: "input",
-        name: "title",
-        message: "What is the new title of the role?",
-        validate: (input) => {
-          if (input.trim() === "") {
-            return "Please enter a valid title.";
-          }
-          return true;
-        },
-      },
-      {
-        type: "number",
-        name: "salary",
-        message: "What is the new salary of the role?",
-        validate: (input) => {
-          if (isNaN(input)) {
-            return "Please enter a valid number.";
-          }
-          return true;
-        },
-      },
-      {
-        type: "list",
-        name: "department",
-        message: "Which department does the role belong to?",
-        choices: rows.map((row) => ({ name: row.department, value: row.department })),
-      },
-    ]).then((answers) => {
-      const sql = `UPDATE roles SET title = ?, salary = ?, department_id = (SELECT id FROM departments WHERE name = ?) WHERE id = ?`;
-      const params = [answers.title, answers.salary, answers.department, answers.role];
-      db.query(sql, params, (err, result) => {
-        if (err) throw err;
-        console.log(`${result.affectedRows} role updated!\n`);
-        promptMainMenu();
-      });
-    });
-  });
-}
-
 // Function to delete a role
 function deleteRole() {
   const sql = `SELECT roles.id, roles.title, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id`;
@@ -123,7 +74,10 @@ function deleteRole() {
         type: "list",
         name: "role",
         message: "Choose the role to delete:",
-        choices: rows.map((row) => ({ name: `${row.title} (${row.department})`, value: row.id })),
+        choices: rows.map((row) => ({
+          name: `${row.title} (${row.department})`,
+          value: row.id,
+        })),
       },
       {
         type: "confirm",
@@ -147,4 +101,4 @@ function deleteRole() {
   });
 }
 
-module.exports = { viewAllRoles, addRole, updateRole, deleteRole };
+module.exports = { viewAllRoles, addRole, deleteRole };
