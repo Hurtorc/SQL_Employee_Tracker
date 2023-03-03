@@ -34,6 +34,55 @@ function addDepartment() {
   });
 }
 
+function updateDepartment() {
+  // Prompt the user to select the department to update and enter the new department name
+  const departmentChoices = [];
+  const sql = "SELECT * FROM department ORDER BY name";
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.log("Error retrieving departments from the database:");
+      console.log(err);
+      promptMainMenu();
+      return;
+    }
+    // Create an array of department choices for the prompt
+    rows.forEach((department) => {
+      departmentChoices.push({ name: department.name, value: department.id });
+    });
+
+    prompt([
+      {
+        type: "list",
+        name: "departmentId",
+        message: "Which department do you want to update?",
+        choices: departmentChoices,
+      },
+      {
+        type: "input",
+        name: "newDepartmentName",
+        message: "Enter the new name for the department:",
+      },
+    ]).then((answers) => {
+      const sql = `UPDATE department SET name = ? WHERE id = ?`;
+      db.query(
+        sql,
+        [answers.newDepartmentName, answers.departmentId],
+        (err, result) => {
+          if (err) {
+            console.log("Error updating department:");
+            console.log(err);
+          } else {
+            console.log(
+              `Successfully updated department ${answers.departmentId}!`
+            );
+          }
+          promptMainMenu();
+        }
+      );
+    });
+  });
+}
+
 //Function to delete a department
 function deleteDepartment() {
   const sql = `SELECT * FROM departments`;
@@ -60,4 +109,4 @@ function deleteDepartment() {
 
 //exporting the functions
 
-module.exports = { viewDepartments, addDepartment, deleteDepartment };
+module.exports = { viewDepartments, addDepartment, updateDepartment, deleteDepartment };

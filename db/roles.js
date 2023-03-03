@@ -1,41 +1,150 @@
-const addRole = async () => {
-  try {
-    // Retrieve all departments from the database
-    const departments = await db.query("SELECT * FROM departments");
-    // Prompt user for role information
-const { title, salary, department_id } = await prompt([
-  {
-    type: "input",
-    message: "Enter the title of the role:",
-    name: "title",
-  },
-  {
-    type: "number",
-    message: "Enter the salary for this role:",
-    name: "salary",
-  },
-  {
-    type: "list",
-    message: "Choose the department for this role:",
-    name: "department_id",
-    choices: departments.map((department) => ({
-      name: department.name,
-      value: department.id,
-    })),
-  },
-]);
-
-// Add role to the database
-await db.query(
-  "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)",
-  [title, salary, department_id]
-);
-
-console.log(`Role '${title}' has been added to the database.`);
-} catch (err) {
-console.log("Error adding role:", err);
+//Function to view all roles
+function viewAllRoles() {
+  const sql = `SELECT role.id, role.title, department.name AS department, role.salary 
+              FROM role
+              LEFT JOIN department ON role.department_id = department.id
+              ORDER BY role.id`;
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.log("Error retrieving roles from the database:");
+      console.log(err);
+      return;
+    }
+    console.table(rows);
+    promptMainMenu();
+  });
 }
 
-// Ask user if they want to perform another action
-await askUser();
-};
+// Function to add a role
+function addRole() {
+  const sql = `SELECT * FROM departments`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    prompt([
+      {
+        type: "input",
+        name: "title",
+        message: "What is the title of the role?",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid title.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "number",
+        name: "salary",
+        message: "What is the salary of the role?",
+        validate: (input) => {
+          if (isNaN(input)) {
+            return "Please enter a valid number.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "list",
+        name: "department",
+        message: "Which department does the role belong to?",
+        choices: rows.map((row) => ({ name: row.name, value: row.id })),
+      },
+    ]).then((answers) => {
+      const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
+      const params = [answers.title, answers.salary, answers.department];
+      db.query(sql, params, (err, result) => {
+        if (err) throw err;
+        console.log(`${result.affectedRows} role added!\n`);
+        promptMainMenu();
+      });
+    });
+  });
+}
+
+// Function to update a role
+function updateRole() {
+  const sql = `SELECT roles.id, roles.title, departments.name AS department, roles.salary FROM roles LEFT JOIN departments ON roles.department_id = departments.id`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    prompt([
+      {
+        type: "list",
+        name: "role",
+        message: "Choose the role to update:",
+        choices: rows.map((row) => ({ name: `${row.title} (${row.department})`, value: row.id })),
+      },
+      {
+        type: "input",
+        name: "title",
+        message: "What is the new title of the role?",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid title.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "number",
+        name: "salary",
+        message: "What is the new salary of the role?",
+        validate: (input) => {
+          if (isNaN(input)) {
+            return "Please enter a valid number.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "list",
+        name: "department",
+        message: "Which department does the role belong to?",
+        choices: rows.map((row) => ({ name: row.department, value: row.department })),
+      },
+    ]).then((answers) => {
+      const sql = `UPDATE roles SET title = ?, salary = ?, department_id = (SELECT id FROM departments WHERE name = ?) WHERE id = ?`;
+      const params = [answers.title, answers.salary, answers.department, answers.role];
+      db.query(sql, params, (err, result) => {
+        if (err) throw err;
+        console.log(`${result.affectedRows} role updated!\n`);
+        promptMainMenu();
+      });
+    });
+  });
+}
+
+// Function to delete a role
+function deleteRole() {
+  const sql = `SELECT roles.id, roles.title, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id`;
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    prompt([
+      {
+        type: "list",
+        name: "role",
+        message: "Choose the role to delete:",
+        choices: rows.map((row) => ({ name: `${row.title} (${row.department})`, value: row.id })),
+      },
+      {
+        type: "confirm",
+        name: "confirm",
+        message: "Are you sure you want to delete the selected role?",
+        default: false,
+      },
+    ]).then((answers) => {
+      if (answers.confirm) {
+        const sql = `DELETE FROM roles WHERE id = ?`;
+        const params = [answers.role];
+        db.query(sql, params, (err, result) => {
+          if (err) throw err;
+          console.log(`${result.affectedRows} role deleted!\n`);
+          promptMainMenu();
+        });
+      } else {
+        promptMainMenu();
+      }
+    });
+  });
+}
+
+module.exports = { viewAllRoles, addRole, updateRole, deleteRole };
