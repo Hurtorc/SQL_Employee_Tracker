@@ -1,21 +1,21 @@
-const { prompt } = require("inquirer");
+const { prompt, default: inquirer } = require("inquirer");
 const db = require("./db/connection");
 
-// IMPORTING ALL THE FUNCTIONS FROM THE OTHER FILES
-// const {
-//   viewDepartments,
-//   addDepartment,
-//   deleteDepartment,
-// } = require("./db/departments");
+//IMPORTING ALL THE FUNCTIONS FROM THE OTHER FILES
+const {
+  viewDepartments,
+  addDepartment,
+  deleteDepartment,
+} = require("./db/departments");
 
 const { viewAllRoles, addRole, deleteRole } = require("./db/roles");
 
-// const {
-//   viewAllEmployees,
-//   addEmployee,
-//   updateEmployeeRole,
-//   deleteEmployee,
-// } = require("./db/employee");
+const {
+  viewAllEmployees,
+  addEmployee,
+  updateEmployeeRole,
+  deleteEmployee,
+} = require("./db/employee");
 
 // Function to display main menu
 const promptMainMenu = async () => {
@@ -39,43 +39,53 @@ const promptMainMenu = async () => {
         "Exit",
       ],
     },
-    ]);
-    console.log(mainmenu); // This is the value of the choice the user made
-    switch (mainmenu) {
-      case "View all departments":
-        data = viewDepartments();
-        console.table(data);
-        break;
-      case "View all roles":
-        data = viewAllRoles();
-        break;
-      case "View all employees":
-        data = viewAllEmployees();
-        break;
-      case "Add a department":
-        data = addDepartment();
-        break;
-      case "Add a role":
-        data = addRole();
-        break;
-      case "Add an employee":
-        data = addEmployee();
-        break;
-      case "Update an employee role":
-        data = updateEmployeeRole();
-        break;
-      case "Delete a department":
-        data = deleteDepartment();
-        break;
-      case "Delete a role":
-        data = deleteRole();
-        break;
-      case "Delete an employee":
-        data = deleteEmployee();
-        break;
-    }
-    promptMainMenu(false);
-  };
+  ]);
+  switch (mainmenu) {
+    case "View all departments":
+      data = viewDepartments();
+      console.table(data);
+      break;
+    case "View all roles":
+      data = viewAllRoles();
+      console.table(data);
+      break;
+    case "View all employees":
+      data = viewAllEmployees();
+      console.table(data);
+      break;
+    case "Add a department":
+      data = addDepartment();
+      console.table(data);
+      break;
+    case "Add a role":
+      data = addRole();
+      console.table(data);
+      break;
+    case "Add an employee":
+      data = addEmployee();
+      console.table(data);
+      break;
+    case "Update an employee role":
+      data = updateEmployeeRole();
+      console.table(data);
+      break;
+    case "Delete a department":
+      data = deleteDepartment();
+      console.table(data);
+      break;
+    case "Delete a role":
+      data = deleteRole();
+      console.table(data);
+      break;
+    case "Delete an employee":
+      data = deleteEmployee();
+      console.table(data);
+      break;
+    case "Exit":
+      process.exit();
+  }
+  promptMainMenu(false);
+};
 
 // Call the promptMainMenu function to start the application
-promptMainMenu();
+promptMainMenu(true);
