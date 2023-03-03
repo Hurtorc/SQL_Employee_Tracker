@@ -18,13 +18,13 @@ const {
 } = require("./db/employee");
 
 // Function to display main menu
-function promptMainMenu() {
-  prompt([
+const promptMainMenu = async () => {
+  const { mainmenu } = await prompt([
     {
       type: "list",
       name: "mainMenu",
       message: "What would you like to do?",
-      pagesize: 15,
+
       choices: [
         "View all departments",
         "View all roles",
@@ -39,44 +39,46 @@ function promptMainMenu() {
         "Exit",
       ],
     },
-  ]).then((answers) => {
-    switch (answers.mainMenu) {
+    ]);
+    console.log(mainmenu); // This is the value of the choice the user made
+    switch (mainmenu) {
       case "View all departments":
-        viewDepartments();
+        data = viewDepartments();
+        console.table(data);
         break;
       case "View all roles":
-        viewAllRoles();
+        data = viewAllRoles();
         break;
       case "View all employees":
-        viewAllEmployees();
+        data = viewAllEmployees();
         break;
       case "Add a department":
-        addDepartment();
+        data = addDepartment();
         break;
       case "Add a role":
-        addRole();
+        data = addRole();
         break;
       case "Add an employee":
-        addEmployee();
+        data = addEmployee();
         break;
       case "Update an employee role":
-        updateEmployeeRole();
+        data = updateEmployeeRole();
         break;
       case "Delete a department":
-        deleteDepartment();
+        data = deleteDepartment();
         break;
       case "Delete a role":
-        deleteRole();
+        data = deleteRole();
         break;
       case "Delete an employee":
-        deleteEmployee();
+        data = deleteEmployee();
         break;
       case "Exit":
         db.end();
         break;
     }
-  });
-}
+    promptMainMenu();
+  };
 
 // Call the promptMainMenu function to start the application
 promptMainMenu();
