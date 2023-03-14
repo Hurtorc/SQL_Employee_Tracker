@@ -22,7 +22,7 @@ const promptMainMenu = async () => {
   const { mainmenu } = await prompt([
     {
       type: "list",
-      name: "mainMenu",
+      name: "mainmenu",
       message: "What would you like to do?",
 
       choices: [
@@ -42,44 +42,44 @@ const promptMainMenu = async () => {
   ]);
   switch (mainmenu) {
     case "View all departments":
-      data = viewDepartments();
-      console.table(data);
+      const departments = await viewDepartments();
+      console.table(departments);
       break;
     case "View all roles":
-      data = viewAllRoles();
-      console.table(data);
+      const roles = await viewAllRoles();
+      console.table(roles);
       break;
     case "View all employees":
-      data = viewAllEmployees();
-      console.table(data);
+      const employees = await viewAllEmployees();
+      console.table(employees);
       break;
     case "Add a department":
-      data = addDepartment();
-      console.table(data);
+      const newDepartment = await addDepartment();
+      console.table(newDepartment);
       break;
     case "Add a role":
-      data = addRole();
-      console.table(data);
+      const newRole = await addRole();
+      console.table(newRole);
       break;
     case "Add an employee":
-      data = addEmployee();
-      console.table(data);
+      const newEmployee = await addEmployee();
+      console.table(newEmployee);
       break;
     case "Update an employee role":
-      data = updateEmployeeRole();
-      console.table(data);
+      const employeeToUpdate = await updateEmployeeRole();
+      console.table(employeeToUpdate);
       break;
     case "Delete a department":
-      data = deleteDepartment();
-      console.table(data);
+      const deletedDepartment = await deleteDepartment();
+      console.table(deletedDepartment);
       break;
     case "Delete a role":
-      data = deleteRole();
-      console.table(data);
+      const deletedRole = await deleteRole();
+      console.table(deletedRole);
       break;
     case "Delete an employee":
-      data = deleteEmployee();
-      console.table(data);
+      const deletedEmployee = await deleteEmployee();
+      console.table(deletedEmployee);
       break;
     case "Exit":
       process.exit();
